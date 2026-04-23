@@ -1,0 +1,35 @@
+# 1. Standard Ignores
+.git
+.gitignore
+.idea
+.vscode
+**/.DS_Store
+**/*.swp
+**/*.swo
+
+# 2. Critical: Global Node Modules
+# این خط حیاتی‌ترین بخش برای رفع خطای توست
+**/node_modules/
+
+# 3. Next.js / Frontend Artifacts
+# خروجی‌های بیلد نباید کپی شوند
+**/.next/
+**/out/
+**/build/
+**/dist/
+
+# 4. Local env / secrets
+.env
+**/.env
+**/.env.local
+**/.env.*.local
+
+# 5. PHP / Laravel specific (based on your project)
+**/vendor/
+**/storage/
+**/.phpunit.cache/
+
+# 6. Logs & Caches
+**/*.log
+**/coverage/
+.npm

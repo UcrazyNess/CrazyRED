@@ -1,0 +1,105 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./crazyDocker/api/Dockerfile
+    image: crazy-api-app
+    container_name: crazy_app
+    restart: unless-stopped
+    working_dir: /var/www/html
+    environment:
+      - DB_HOST=mariadb # تغییر از mariadb_player به mariadb برای هماهنگی با نام سرویس
+      - DB_DATABASE=${DB_DATABASE}
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - REDIS_HOST=redis
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+      - APP_ENV=local
+    volumes:
+      - ./crazyAPI/:/var/www/html
+    networks:
+      crazy_network:
+        ipv4_address: 10.10.0.8
+      crazy_private_network:
+        ipv4_address: 10.10.2.8
+    depends_on:
+      mariadb:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      # استفاده از اسکریپت PHP برای تست باز بودن پورت FPM
+      test: ["CMD-SHELL", "php -r '$$sock = @fsockopen(\"127.0.0.1\", 9000); if ($$sock) { fclose($$sock); exit(0); } exit(1);'"]
+      interval: 10s       # فاصله بین هر تست
+      timeout: 5s         # زمان انتظار برای پاسخ
+      retries: 10         # تعداد دفعات مجاز شکست قبل از اعلام Unhealthy
+      start_period: 60s   # زمان تنفس (بسیار مهم: به اسکریپت انترپوینت اجازه می‌دهد کامپوزر و مایگریشن را تمام کند)
+
+  nginx:
+    image: nginx:alpine
+    container_name: crazy_nginx
+    restart: unless-stopped
+    volumes:
+      - ./crazyAPI/storage/app/public:/var/www/storage:ro
+      - ./crazyAPI/public:/var/www/public:ro
+      - ./crazyDocker/nginx:/etc/nginx/conf.d:ro
+      - ./crazyDocker/nginx/ssl:/etc/nginx/ssl:ro
+    networks:
+      crazy_network:
+        ipv4_address: 10.10.0.10
+    depends_on:
+      app:
+        condition: service_healthy
+
+  mariadb:
+    image: mariadb:10.11
+    container_name: crazy_db
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+      MYSQL_USER: ${DB_USERNAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - crazy_db_data:/var/lib/mysql
+    networks:
+      crazy_private_network:
+        ipv4_address: 10.10.2.9
+    healthcheck:
+      # استفاده از $$ برای جلوگیری از تفسیر متغیر توسط داکر کامپوز قبل از اجرا
+      test: ["CMD-SHELL", "mariadb-admin ping -h localhost -uroot -p$${MYSQL_ROOT_PASSWORD} --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 20s
+
+  redis:
+    image: redis:alpine
+    container_name: crazy_redis
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    networks:
+      crazy_private_network:
+        ipv4_address: 10.10.2.7
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+        
+networks:
+  crazy_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.0.0/24 
+  crazy_private_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.10.2.0/24
+    internal: true # این شبکه به اینترنت دسترسی ندارد (امنیت دیتابیس)
+
+volumes:
+  crazy_db_data:
