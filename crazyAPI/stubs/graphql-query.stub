@@ -1,0 +1,33 @@
+<?php
+
+namespace {{ namespace }};
+
+use GraphQL\Type\Definition\Type;
+use Rebing\GraphQL\Support\Facades\GraphQL;
+use Rebing\GraphQL\Support\Query;
+
+class {{ class }} extends Query
+{
+    protected $attributes = [
+        'name' => '{{ class }}',
+    ];
+
+    public function type(): Type
+    {
+        // مثلاً: Type::listOf(GraphQL::type('Target'))
+        return Type::listOf(Type::string());
+    }
+
+    public function args(): array
+    {
+        return [
+            // پارامترهای ورودی مثل id برای فیلتر کردن
+        ];
+    }
+
+    public function resolve($root, $args)
+    {
+        // منطق دریافت داده از دیتابیس یا مدل‌های ماژول
+        return [];
+    }
+}

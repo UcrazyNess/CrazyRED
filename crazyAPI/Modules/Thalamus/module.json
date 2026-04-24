@@ -1,0 +1,11 @@
+{
+    "name": "Thalamus",
+    "alias": "thalamus",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Thalamus\\Providers\\ThalamusServiceProvider"
+    ],
+    "files": []
+}

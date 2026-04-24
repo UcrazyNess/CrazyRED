@@ -1,0 +1,32 @@
+<?php
+
+namespace {{ namespace }};
+
+use GraphQL\Type\Definition\Type;
+use Rebing\GraphQL\Support\Facades\GraphQL;
+use Rebing\GraphQL\Support\Mutation;
+
+class {{ class }} extends Mutation
+{
+    protected $attributes = [
+        'name' => '{{ class }}',
+    ];
+
+    public function type(): Type
+    {
+        return GraphQL::type('Target'); // تایپی که بعد از تغییر برمی‌گردد
+    }
+
+    public function args(): array
+    {
+        return [
+            // ورودی‌ها: مثلاً 'ip' => ['name' => 'ip', 'type' => Type::string()]
+        ];
+    }
+
+    public function resolve($root, $args)
+    {
+        // منطق اجرای عملیات (مثلاً Target::create($args))
+        return [];
+    }
+}

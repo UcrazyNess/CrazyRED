@@ -8,8 +8,17 @@
         "framework"
     ],
     "license": "MIT",
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "http://10.10.101.100:8081/repository/crazycmp/"
+        },
+        {
+            "packagist.org": false
+        }
+    ],
     "require": {
-        "php": "^8.3",
+        "laragear/webauthn": "^5.0",
         "laravel/framework": "^13.0",
         "laravel/horizon": "^5.46",
         "laravel/reverb": "^1.10",
@@ -17,6 +26,7 @@
         "laravel/tinker": "^3.0",
         "nwidart/laravel-modules": "^13.0",
         "predis/predis": "^3.4",
+        "rebing/graphql-laravel": "^9.17",
         "spatie/laravel-permission": "^7.3",
         "stevebauman/purify": "^6.3",
         "wikimedia/composer-merge-plugin": "^2.1"
@@ -59,13 +69,18 @@
             "@php artisan config:clear --ansi",
             "@php artisan test"
         ],
-        "post-autoload-dump": [
-            "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
-            "@php artisan package:discover --ansi"
-        ],
-        "post-update-cmd": [
-            "@php artisan vendor:publish --tag=laravel-assets --ansi --force"
-        ],
+        "scripts": {
+            "post-autoload-dump": [
+                "Illuminate\\Foundation\\ComposerScripts::postAutoloadDump",
+                "@php artisan package:discover --ansi",
+                "@php artisan ide-helper:generate",
+                "@php artisan ide-helper:meta"
+            ],
+            "post-update-cmd": [
+                "@php artisan vendor:publish --tag=laravel-assets --ansi --force",
+                "@php artisan ide-helper:models --nowrite"
+            ]
+        },
         "post-root-package-install": [
             "@php -r \"file_exists('.env') || copy('.env.example', '.env');\""
         ],
@@ -83,16 +98,16 @@
             "dont-discover": []
         },
         "merge-plugin": {
-        "include": [
-            "Modules/*/composer.json"
-        ],
-        "recurse": true,
-        "replace": false,
-        "ignore-duplicates": false,
-        "merge-dev": true,
-        "merge-extra": false,
-        "merge-extra-deep": false
-    }
+            "include": [
+                "Modules/*/composer.json"
+            ],
+            "recurse": true,
+            "replace": false,
+            "ignore-duplicates": false,
+            "merge-dev": true,
+            "merge-extra": false,
+            "merge-extra-deep": false
+        }
     },
     "config": {
         "optimize-autoloader": true,
@@ -102,7 +117,8 @@
             "pestphp/pest-plugin": true,
             "php-http/discovery": true,
             "wikimedia/composer-merge-plugin": true
-        }
+        },
+        "secure-http": false
     },
     "minimum-stability": "stable",
     "prefer-stable": true
