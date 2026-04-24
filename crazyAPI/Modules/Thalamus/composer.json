@@ -1,0 +1,30 @@
+{
+    "name": "nwidart/thalamus",
+    "description": "",
+    "authors": [
+        {
+            "name": "Nicolas Widart",
+            "email": "n.widart@gmail.com"
+        }
+    ],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {
+
+            }
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Thalamus\\": "app/",
+            "Modules\\Thalamus\\Database\\Factories\\": "database/factories/",
+            "Modules\\Thalamus\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Thalamus\\Tests\\": "tests/"
+        }
+    }
+}

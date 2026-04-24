@@ -1,0 +1,24 @@
+<?php
+
+namespace {{ namespace }};
+
+use Rebing\GraphQL\Support\Type as GraphQLType;
+use GraphQL\Type\Definition\Type;
+
+class {{ class }} extends GraphQLType
+{
+    protected $attributes = [
+        'name' => '{{ class }}',
+        'description' => 'A description of {{ class }}',
+    ];
+
+    public function fields(): array
+    {
+        return [
+            'id' => [
+                'type' => Type::nonNull(Type::id()),
+                'description' => 'The id of the resource',
+            ],
+        ];
+    }
+}
